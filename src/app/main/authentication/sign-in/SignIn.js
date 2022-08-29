@@ -13,9 +13,8 @@ import FuseSvgIcon from '@fuse/core/FuseSvgIcon';
 import Paper from '@mui/material/Paper';
 import { useEffect } from 'react';
 import { Box } from '@mui/system';
-import jwtService from '../../../auth/services/jwtService';
-import { setRole } from 'app/store/userSlice';
-import { useDispatch } from 'react-redux';
+import { selectUser, loginUser, selectApi } from 'app/store/userSlice';
+import { useDispatch, useSelector } from 'react-redux';
 
 /**
  * Form Validation Schema
@@ -36,6 +35,8 @@ const defaultValues = {
 
 function SignIn() {
   const dispatch = useDispatch();
+  const userRedux = useSelector(selectUser);
+  const apiResponse = useSelector(selectApi);
 
   const { control, formState, handleSubmit, setError, setValue } = useForm({
     mode: 'onChange',
@@ -46,14 +47,20 @@ function SignIn() {
   const { isValid, dirtyFields, errors } = formState;
 
   useEffect(() => {
-    setValue('email', 'admin@fusetheme.com', { shouldDirty: true, shouldValidate: true });
-    setValue('password', 'admin', { shouldDirty: true, shouldValidate: true });
+    setValue('email', 'diogo@gmail.com', { shouldDirty: true, shouldValidate: true });
+    setValue('password', '1234@', { shouldDirty: true, shouldValidate: true });
   }, [setValue]);
 
-  function onSubmit({ email, password }) {
-    console.log('teste');
+  async function onSubmit({ email, password }) {
+    const loginUserParams = {
+      route: 'user/login',
+      data: {
+        name: email,
+        pass: password,
+      },
+    };
 
-    dispatch(setRole('admin'));
+    dispatch(loginUser(loginUserParams));
   }
 
   return (

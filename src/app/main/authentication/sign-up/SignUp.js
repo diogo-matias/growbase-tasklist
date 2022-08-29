@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { Controller, useForm } from 'react-hook-form';
 import Button from '@mui/material/Button';
@@ -6,15 +7,16 @@ import FormControl from '@mui/material/FormControl';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import * as yup from 'yup';
-import _ from '@lodash';
 import AvatarGroup from '@mui/material/AvatarGroup';
 import Avatar from '@mui/material/Avatar';
 import Box from '@mui/material/Box';
 import Paper from '@mui/material/Paper';
 import FormHelperText from '@mui/material/FormHelperText';
-import jwtService from '../../../auth/services/jwtService';
+import doPostUser from 'app/services/userApi';
+import { showMessage } from 'app/store/fuse/messageSlice';
+import { useDispatch } from 'react-redux';
 
 /**
  * Form Validation Schema
@@ -39,32 +41,36 @@ const defaultValues = {
 };
 
 function SignUp() {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [Rpassword, setRpassword] = useState('');
   const { control, formState, handleSubmit, reset } = useForm({
     mode: 'onChange',
     defaultValues,
     resolver: yupResolver(schema),
   });
 
-  const { isValid, dirtyFields, errors, setError } = formState;
+  const { errors } = formState;
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
 
-  function onSubmit({ displayName, password, email }) {
-    jwtService
-      .createUser({
-        displayName,
-        password,
-        email,
-      })
-      .then((user) => {
-        // No need to do anything, registered user data will be set at app/auth/AuthContext
-      })
-      .catch((_errors) => {
-        _errors.forEach((error) => {
-          setError(error.type, {
-            type: 'manual',
-            message: error.message,
-          });
-        });
-      });
+  async function onSubmit(e) {
+    e.preventDefault();
+
+    const route = 'user';
+    const data = {
+      name: email,
+      pass: password,
+      Rpass: Rpassword,
+    };
+
+    try {
+      doPostUser(route, data);
+      dispatch(showMessage({ message: 'Usuário criado com sucesso' }));
+      setTimeout(() => navigate('/sign-in'), 1500);
+    } catch (err) {
+      dispatch(showMessage({ message: err.response.data.error }));
+    }
   }
 
   return (
@@ -90,25 +96,6 @@ function SignUp() {
             onSubmit={handleSubmit(onSubmit)}
           >
             <Controller
-              name="displayName"
-              control={control}
-              render={({ field }) => (
-                <TextField
-                  {...field}
-                  className="mb-24"
-                  label="Display name"
-                  autoFocus
-                  type="name"
-                  error={!!errors.displayName}
-                  helperText={errors?.displayName?.message}
-                  variant="outlined"
-                  required
-                  fullWidth
-                />
-              )}
-            />
-
-            <Controller
               name="email"
               control={control}
               render={({ field }) => (
@@ -122,6 +109,8 @@ function SignUp() {
                   variant="outlined"
                   required
                   fullWidth
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
                 />
               )}
             />
@@ -140,6 +129,8 @@ function SignUp() {
                   variant="outlined"
                   required
                   fullWidth
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
                 />
               )}
             />
@@ -158,6 +149,8 @@ function SignUp() {
                   variant="outlined"
                   required
                   fullWidth
+                  value={Rpassword}
+                  onChange={(e) => setRpassword(e.target.value)}
                 />
               )}
             />
@@ -181,8 +174,9 @@ function SignUp() {
               color="secondary"
               className="w-full mt-24"
               aria-label="Register"
-              disabled={_.isEmpty(dirtyFields) || !isValid}
+              // disabled={_.isEmpty(dirtyFields) || !isValid}
               type="submit"
+              onClick={onSubmit}
               size="large"
             >
               Create your free account
