@@ -12,7 +12,7 @@ import { product, products } from '../main/products/store';
 import { example, examples } from '../main/example/store';
 import pokemon from '../main/SearchPokemon/store';
 import user from './userSlice';
-import tasks from './tasks/taskUserSlice';
+import tasks from './tasks/taskSlice';
 
 const combinedReducer = combineReducers({
   tasks,
@@ -34,3 +34,4 @@ const combinedReducer = combineReducers({
 });
 
 export default combinedReducer;
+export type State = ReturnType<typeof combinedReducer>;

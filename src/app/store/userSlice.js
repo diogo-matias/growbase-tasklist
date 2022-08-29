@@ -5,8 +5,8 @@ import _ from '@lodash';
 import { setInitialSettings } from 'app/store/fuse/settingsSlice';
 import { showMessage } from 'app/store/fuse/messageSlice';
 import settingsConfig from 'app/configs/settingsConfig';
+import doPostUser from 'app/services/userApi';
 import jwtService from '../auth/services/jwtService';
-import doPost from 'app/services/userApi';
 
 export const setUser = createAsyncThunk('user/setUser', async (user, { dispatch, getState }) => {
   /*
@@ -82,6 +82,12 @@ export const updateUserData = (user) => async (dispatch, getState) => {
     });
 };
 
+export const loginUser = createAsyncThunk('user/loginUser', async (value) => {
+  const { route, data } = value;
+  const response = await doPostUser(route, data);
+  return response;
+});
+
 const initialState = {
   role: [], // guest
   data: {
@@ -90,6 +96,7 @@ const initialState = {
     email: 'johndoe@withinpixels.com',
     shortcuts: ['apps.calendar', 'apps.mailbox', 'apps.contacts', 'apps.tasks'],
   },
+  api: {},
 };
 
 const userSlice = createSlice({
@@ -102,16 +109,21 @@ const userSlice = createSlice({
       return state;
     },
   },
-  extraReducers: {
-    [updateUserSettings.fulfilled]: (state, action) => action.payload,
-    [updateUserShortcuts.fulfilled]: (state, action) => action.payload,
-    [setUser.fulfilled]: (state, action) => action.payload,
+  extraReducers: ({ addCase }) => {
+    addCase(updateUserSettings.fulfilled, (state, action) => action.payload);
+    addCase(updateUserShortcuts.fulfilled, (state, action) => action.payload);
+    addCase(loginUser.fulfilled, (state, { payload }) => {
+      state.api = payload.data;
+      state.role = 'admin';
+    });
   },
 });
 
 export const { userLoggedOut, setRole } = userSlice.actions;
 
 export const selectUser = ({ user }) => user;
+export const selectApi = ({ user }) => user.api;
+export const selectToken = ({ user }) => user.api.data.token;
 
 export const selectUserShortcuts = ({ user }) => user.data.shortcuts;
 
