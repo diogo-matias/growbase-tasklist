@@ -65,11 +65,12 @@ function SignUp() {
     };
 
     try {
-      doPostUser(route, data);
-      dispatch(showMessage({ message: 'Usuário criado com sucesso' }));
+      await doPostUser(route, data);
       setTimeout(() => navigate('/sign-in'), 1500);
+      dispatch(showMessage({ message: 'Usuário criado com sucesso', variant:'success' }));
     } catch (err) {
-      dispatch(showMessage({ message: err.response.data.error }));
+      console.log(err);
+      dispatch(showMessage({ message: err.message, variant:'error' }));
     }
   }
 
@@ -80,12 +81,12 @@ function SignUp() {
           <img className="w-48" src="assets/images/logo/logo.svg" alt="logo" />
 
           <Typography className="mt-32 text-4xl font-extrabold tracking-tight leading-tight">
-            Sign up
+            Cadastre-se
           </Typography>
           <div className="flex items-baseline mt-2 font-medium">
-            <Typography>Already have an account?</Typography>
+            <Typography>Já tem uma conta?</Typography>
             <Link className="ml-4" to="/sign-in">
-              Sign in
+              Entrar
             </Link>
           </div>
 
@@ -155,20 +156,6 @@ function SignUp() {
               )}
             />
 
-            <Controller
-              name="acceptTermsConditions"
-              control={control}
-              render={({ field }) => (
-                <FormControl className="items-center" error={!!errors.acceptTermsConditions}>
-                  <FormControlLabel
-                    label="I agree to the Terms of Service and Privacy Policy"
-                    control={<Checkbox size="small" {...field} />}
-                  />
-                  <FormHelperText>{errors?.acceptTermsConditions?.message}</FormHelperText>
-                </FormControl>
-              )}
-            />
-
             <Button
               variant="contained"
               color="secondary"
@@ -179,7 +166,7 @@ function SignUp() {
               onClick={onSubmit}
               size="large"
             >
-              Create your free account
+              Crie sua conta gratuita
             </Button>
           </form>
         </div>
@@ -235,11 +222,11 @@ function SignUp() {
 
         <div className="z-10 relative w-full max-w-2xl">
           <div className="text-7xl font-bold leading-none text-gray-100">
-            <div>Welcome to</div>
-            <div>our community</div>
+            <div>Cadastre-se</div>
+            <div>no sistema</div>
           </div>
           <div className="mt-24 text-lg tracking-tight leading-6 text-gray-400">
-            Fuse helps developers to build organized and well coded dashboards full of beautiful and
+            tasks sistem build organized and well coded dashboards full of beautiful and
             rich modules. Join us and start building your application today.
           </div>
           <div className="flex items-center mt-32">

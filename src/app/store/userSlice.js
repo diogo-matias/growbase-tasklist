@@ -7,6 +7,7 @@ import { showMessage } from 'app/store/fuse/messageSlice';
 import settingsConfig from 'app/configs/settingsConfig';
 import doPostUser from 'app/services/userApi';
 import jwtService from '../auth/services/jwtService';
+import { Navigate } from 'react-router-dom';
 
 export const setUser = createAsyncThunk('user/setUser', async (user, { dispatch, getState }) => {
   /*
@@ -82,28 +83,43 @@ export const updateUserData = (user) => async (dispatch, getState) => {
     });
 };
 
-export const loginUser = createAsyncThunk('user/loginUser', async (value) => {
+export const loginUser = createAsyncThunk('user/loginUser', async (value, {dispatch, rejectWithValue}) => {
   const { route, data } = value;
-  const response = await doPostUser(route, data);
-  return response;
+
+
+ const response = await doPostUser(route, data);
+
+  if (response.data.ok) {
+    
+    history.push({
+      pathname: '/tasks',
+    });
+    return response
+  }
+
+  return rejectWithValue(response)
+
 });
 
 const initialState = {
   role: [], // guest
   data: {
-    displayName: 'John Doe',
+    displayName: 'displayName',
     photoURL: 'assets/images/avatars/brian-hughes.jpg',
     email: 'johndoe@withinpixels.com',
     shortcuts: ['apps.calendar', 'apps.mailbox', 'apps.contacts', 'apps.tasks'],
   },
   api: {},
+  ok: true,
 };
 
 const userSlice = createSlice({
   name: 'user',
   initialState,
   reducers: {
-    userLoggedOut: (state, action) => initialState,
+    userLoggedOut: (state, action) => {
+      return initialState
+    },
     setRole: (state, { payload }) => {
       state.role.push(payload);
       return state;
@@ -113,17 +129,27 @@ const userSlice = createSlice({
     addCase(updateUserSettings.fulfilled, (state, action) => action.payload);
     addCase(updateUserShortcuts.fulfilled, (state, action) => action.payload);
     addCase(loginUser.fulfilled, (state, { payload }) => {
+      const name = payload.data.data.userName.split('@', 1)[0]
       state.api = payload.data;
+      state.data.photoURL = `https://robohash.org/${name}?set=set4`
       state.role = 'admin';
+      state.ok = true
+      state.data.email = payload.data.data.userName
+      state.data.displayName = name
+    });
+    addCase(loginUser.rejected, (state, { error }) => {
+      state.api = error
+      state.ok = false
     });
   },
 });
 
-export const { userLoggedOut, setRole } = userSlice.actions;
+export const { userLoggedOut, setRole, } = userSlice.actions;
 
 export const selectUser = ({ user }) => user;
 export const selectApi = ({ user }) => user.api;
 export const selectToken = ({ user }) => user.api.data.token;
+export const selectOk = ({ user }) => user.ok;
 
 export const selectUserShortcuts = ({ user }) => user.data.shortcuts;
 

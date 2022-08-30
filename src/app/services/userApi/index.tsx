@@ -12,9 +12,10 @@ const api = Axios.create({
 
 export default async function doPostUser(route: string, data: userProps) {
   try {
-    const response = api.post(route, data);
+    const response = await api.post(route, data);
+    
     return response;
-  } catch (err) {
-    return err;
+  } catch (err: any) {
+    return Promise.reject(new Error(err.response.data.error))
   }
 }

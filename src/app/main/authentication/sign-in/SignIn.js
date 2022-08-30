@@ -13,8 +13,10 @@ import FuseSvgIcon from '@fuse/core/FuseSvgIcon';
 import Paper from '@mui/material/Paper';
 import { useEffect } from 'react';
 import { Box } from '@mui/system';
-import { selectUser, loginUser, selectApi } from 'app/store/userSlice';
+import { selectUser, loginUser, selectApi, selectOk, keepLoggedAction } from 'app/store/userSlice';
 import { useDispatch, useSelector } from 'react-redux';
+import { showMessage } from 'app/store/fuse/messageSlice';
+import { useState } from 'react';
 
 /**
  * Form Validation Schema
@@ -33,10 +35,19 @@ const defaultValues = {
   remember: true,
 };
 
+
+
 function SignIn() {
   const dispatch = useDispatch();
   const userRedux = useSelector(selectUser);
   const apiResponse = useSelector(selectApi);
+  const loginOk = useSelector(selectOk);
+
+  useEffect(() => {
+    if (!loginOk) {
+      dispatch(showMessage({ message: apiResponse.message, variant: 'error' }));
+    }
+  }, [apiResponse])
 
   const { control, formState, handleSubmit, setError, setValue } = useForm({
     mode: 'onChange',
@@ -57,10 +68,11 @@ function SignIn() {
       data: {
         name: email,
         pass: password,
-      },
+      }
     };
 
-    dispatch(loginUser(loginUserParams));
+    dispatch(loginUser(loginUserParams))
+   
   }
 
   return (
@@ -115,12 +127,21 @@ function SignIn() {
 
         <div className="z-10 relative w-full max-w-2xl">
           <div className="text-7xl font-bold leading-none text-gray-100">
-            <img className="w-128 mb-20" src="assets/images/logo/logo.png" alt="logo" />
-            <div>Growbase 2.0</div>
-            <div>nosso framework ReactJS</div>
+            {/* <img className="w-128 mb-20" src="assets/images/logo/logo.png" alt="logo" /> */}
+            {/* <Typography variant='h3'>Sistema de</Typography>
+            
+            <Typography variant='h1' fontWeight='bold' sx={{marginTop: '-15px'}}>RECADOS</Typography> */}
+            <div className="text-7xl font-bold leading-none text-gray-100">
+            <div>Entrar no sistema</div>
+            <div>de Recados</div>
+          </div>
           </div>
           <div className="mt-24 text-lg tracking-tight leading-6 text-gray-400">
-            Framework baseado no theme Fuse, alteramos e adaptamos para o uso na Growdev.
+          </div>
+          <div className="mt-24 text-lg tracking-tight leading-6 text-gray-400">
+            Growbase 2.0
+            <br/>
+            Tarefa final do módulo de FrontEnd III.
           </div>
         </div>
       </Box>
@@ -128,12 +149,12 @@ function SignIn() {
       <Paper className="h-full sm:h-auto md:flex w-full sm:w-auto md:h-full py-32 px-16 sm:p-48 md:p-64 md:pt-96 sm:rounded-2xl md:rounded-none sm:shadow md:shadow-none rtl:border-r-1 ltr:border-l-1">
         <div className="w-full max-w-320 sm:w-320 mx-auto sm:mx-0">
           <Typography className="mt-32 text-4xl font-extrabold tracking-tight leading-tight">
-            Sign in
+            Entrar
           </Typography>
           <div className="flex items-baseline mt-2 font-medium">
-            <Typography>Don't have an account?</Typography>
+            <Typography>Não tem uma conta?</Typography>
             <Link className="ml-4" to="/sign-up">
-              Sign up
+              Registre-se
             </Link>
           </div>
 
@@ -187,7 +208,7 @@ function SignIn() {
                 render={({ field }) => (
                   <FormControl>
                     <FormControlLabel
-                      label="Remember me"
+                      label="Lembre-me"
                       control={<Checkbox size="small" {...field} />}
                     />
                   </FormControl>
@@ -195,7 +216,7 @@ function SignIn() {
               />
 
               <Link className="text-md font-medium" to="/pages/auth/forgot-password">
-                Forgot password?
+                Esqueceu a senha?
               </Link>
             </div>
 
@@ -208,13 +229,13 @@ function SignIn() {
               type="submit"
               size="large"
             >
-              Sign in
+              Entrar
             </Button>
 
             <div className="flex items-center mt-32">
               <div className="flex-auto mt-px border-t" />
               <Typography className="mx-8" color="text.secondary">
-                Or continue with
+                Ou continue com
               </Typography>
               <div className="flex-auto mt-px border-t" />
             </div>

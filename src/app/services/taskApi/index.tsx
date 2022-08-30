@@ -22,7 +22,6 @@ export async function doPost(route: string, body: postProps) {
     const response = api.post(route, body);
     return response;
   } catch (err) {
-    console.log(err);
     return err;
   }
 }
@@ -30,7 +29,6 @@ export async function doPost(route: string, body: postProps) {
 export async function doGetTask(route: string, token: string) {
   try {
     const response = api.get(`${route}?token=${token}`);
-    console.log(response);
     return response;
   } catch (err) {
     return err;
