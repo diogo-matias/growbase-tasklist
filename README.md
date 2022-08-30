@@ -26,3 +26,4 @@ Growbase com fuse 8.0
   - se a página/modulo tiver store
     - criar store...
     - chamar dentro do rootReducer
+   

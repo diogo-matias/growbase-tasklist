@@ -19,7 +19,7 @@ const messageSlice = createSlice({
     showMessage: (state, action) => {
       state.state = true;
       state.options = {
-        ...initialState.options,
+        ...initialState.options, 
         ...action.payload,
       };
     },
