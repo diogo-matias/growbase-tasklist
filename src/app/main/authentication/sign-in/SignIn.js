@@ -58,8 +58,8 @@ function SignIn() {
   const { isValid, dirtyFields, errors } = formState;
 
   useEffect(() => {
-    setValue('email', 'diogo@gmail.com', { shouldDirty: true, shouldValidate: true });
-    setValue('password', '1234@', { shouldDirty: true, shouldValidate: true });
+    setValue('email', 'admin@fusetheme.com', { shouldDirty: true, shouldValidate: true });
+    setValue('password', 'admin', { shouldDirty: true, shouldValidate: true });
   }, [setValue]);
 
   async function onSubmit({ email, password }) {
