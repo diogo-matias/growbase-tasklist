@@ -115,6 +115,9 @@ export default function Content() {
       setOpenSnackbar(true);
       setSnackbarMessage('Tarefa acionada com sucesso');
       setSeverity('success');
+
+      setDescription('')
+      setDetail('')
     } catch (err: any) {
       setOpenSnackbar(true);
       setSnackbarMessage(err?.response.data.error);
@@ -124,7 +127,8 @@ export default function Content() {
   }
 
   async function handleDeleteTask(e: React.MouseEvent) {
-    const { id } = e.target as HTMLButtonElement;
+    const { id } = e.target as HTMLButtonElement
+    
 
     try {
       await doDeleteTask('task', token, id);
@@ -132,6 +136,7 @@ export default function Content() {
       setSnackbarMessage('Deletado');
       setSeverity('error');
     } catch (err: any) {
+      
       setOpenSnackbar(true);
       setSnackbarMessage(err?.response.data.error);
       setSeverity('error');
@@ -263,9 +268,11 @@ export default function Content() {
               
                       sx={{display: 'flex', gap: 1}}
                     >
-                      <EditIcon 
+                      <EditIcon
                       id={task.id}
+                      sx={{pointerEvents: 'none'}}
                       />
+
                        <Typography id={task.id} sx={{display: {xs: 'none', md: 'block'}}}>
                         Editar
                       </Typography> 
@@ -277,7 +284,7 @@ export default function Content() {
                       color="secondary"
                       sx={{display: 'flex', gap: 1}}
                     >
-                      <DeleteIcon id={task.id}/>
+                      <DeleteIcon sx={{pointerEvents: 'none'}}/>
                       <Typography id={task.id} sx={{display: {xs: 'none', md: 'block'}}}>
                         Deletar
                       </Typography> 
